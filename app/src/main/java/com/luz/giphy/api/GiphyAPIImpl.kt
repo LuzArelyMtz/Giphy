@@ -12,4 +12,5 @@ class GiphyAPIImpl{
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+     fun getGiphyService()= provideRetrofit().create(IGiphyAPIService::class.java)
 }

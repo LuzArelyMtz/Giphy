@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luz.giphy.R
 import com.luz.giphy.api.GiphyAPIImpl
-import com.luz.giphy.api.IGiphyAPIService
 import com.luz.giphy.api.model.GiphyResponse
 import com.luz.giphy.ui.adapter.GiphyGridAdapter
 import retrofit2.Call
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         recyclerv = findViewById(R.id.recyclerv)
         initGridAdapter()
 
-        val giphyService:IGiphyAPIService= GiphyAPIImpl().provideRetrofit().create(IGiphyAPIService::class.java)
+        val giphyService= GiphyAPIImpl().getGiphyService()
         val call = giphyService.getResponse()
         call.enqueue(object: Callback<GiphyResponse> {
             override fun onResponse(call: Call<GiphyResponse>, response: Response<GiphyResponse>) {
