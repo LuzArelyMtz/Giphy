@@ -19,21 +19,30 @@ import com.luz.giphy.databinding.ActivityMainBinding
 import com.luz.giphy.ui.adapter.GiphyGridAdapter
 import com.luz.giphy.viewmodel.GiphyViewModel
 
+
 class MainActivity : AppCompatActivity() {
     val gifAdapter by lazy { GiphyGridAdapter() }
     lateinit var recyclerv: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
     private val progressbar: ProgressBar? = null
+    //private val refreshLayout: SwipeRefreshLayout? = null
+    //private val viewModel: GiphyViewModel by viewModels()
     private lateinit var viewModel: GiphyViewModel
+
+    lateinit var response: GiphyResponse
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        /*var actMainBinding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)*/
         recyclerv = findViewById(R.id.recyclerv)
         coordinatorLayout = findViewById(R.id.coordinatorLayout)
         initGridAdapter()
 
         viewModel = ViewModelProvider(this)[GiphyViewModel::class.java]
+        /*actMainBinding.giphyViewModel = viewModel
+        actMainBinding.lifecycleOwner = this*/
         viewModel.getGiphyGift()
         viewModel.livedataGiphy.observe(this, Observer {
             handleResults(it)
