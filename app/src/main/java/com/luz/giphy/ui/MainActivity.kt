@@ -1,34 +1,30 @@
 package com.luz.giphy.ui
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.ProgressBar
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.Observable
-import androidx.databinding.ObservableField
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.luz.giphy.R
-import com.luz.giphy.api.GiphyAPIImpl
+import com.luz.giphy.api.model.Data
 import com.luz.giphy.api.model.GiphyResponse
-import com.luz.giphy.api.model.User
 import com.luz.giphy.databinding.ActivityMainBinding
 import com.luz.giphy.ui.adapter.GiphyGridAdapter
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleObserver
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-
+import com.luz.giphy.viewmodel.GiphyViewModel
 
 class MainActivity : AppCompatActivity() {
-    val gifAdapter by lazy{ GiphyGridAdapter() }
+    val gifAdapter by lazy { GiphyGridAdapter() }
     lateinit var recyclerv: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
-
-    lateinit var response: GiphyResponse
+    private val progressbar: ProgressBar? = null
+    private lateinit var viewModel: GiphyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,40 +33,29 @@ class MainActivity : AppCompatActivity() {
         coordinatorLayout = findViewById(R.id.coordinatorLayout)
         initGridAdapter()
 
-        var actMainBinding : ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        var user = User("user")
-        response.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-            override fun onPropertyChanged(observable: Observable?, i: Int) {
-                Log.d("TA: PropertyChagedCallback", "changed")
-            }
+        viewModel = ViewModelProvider(this)[GiphyViewModel::class.java]
+        viewModel.getGiphyGift()
+        viewModel.livedataGiphy.observe(this, Observer {
+            handleResults(it)
         })
-
-       val userName: ObservableField<String>  = ObservableField()
-
-        var userNameCallback: Observable.OnPropertyChangedCallback = object :  Observable.OnPropertyChangedCallback() {
-            override fun onPropertyChanged(observable: Observable?, i: Int) {
-                userName.set(" your data ")
-            }
-        }
-
-        userName.addOnPropertyChangedCallback(userNameCallback);
-
-
-
-    }
-    private fun handleResults(response: GiphyResponse){
-        gifAdapter.submitList(response.gifList)
     }
 
-    private fun handleError(t: Throwable){
+    private fun handleResults(giftList: List<Data>) {
+        gifAdapter.submitList(giftList)
+    }
 
+    private fun handleError(t: Throwable) {
         val snackbar = Snackbar
-            .make(coordinatorLayout, "ERROR IN FETCHING API RESPONSE. Try again", Snackbar.LENGTH_LONG)
+            .make(
+                coordinatorLayout,
+                "ERROR IN FETCHING API RESPONSE. Try again",
+                Snackbar.LENGTH_LONG
+            )
         snackbar.show()
     }
 
-    private fun initGridAdapter(){
-        recyclerv.layoutManager= GridLayoutManager(this,2)
-        recyclerv.adapter=gifAdapter
+    private fun initGridAdapter() {
+        recyclerv.layoutManager = GridLayoutManager(this, 2)
+        recyclerv.adapter = gifAdapter
     }
 }

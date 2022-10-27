@@ -1,71 +1,53 @@
 package com.luz.giphy.viewmodel
 
-import android.util.Log
-import androidx.databinding.Observable
-import androidx.databinding.ObservableField
-import androidx.databinding.PropertyChangeRegistry
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.luz.giphy.api.GiphyAPIImpl
 import com.luz.giphy.api.model.Data
 import com.luz.giphy.api.model.GiphyResponse
+import com.luz.giphy.repository.GiphyRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleObserver
-import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class GiphyViewModel: ViewModel()
-    /*, Observable */
-{
-    lateinit var gifList: ObservableField<List<Data>>
+class GiphyViewModel() : ViewModel() {
+    private var _livedataGiphy = MutableLiveData<List<Data>>()
+    var livedataGiphy: LiveData<List<Data>> = _livedataGiphy
 
-    private val callbacks : PropertyChangeRegistry by lazy {PropertyChangeRegistry()}
+    private var _progressbar = MutableLiveData<Boolean>()
+    val progressbar: LiveData<Boolean> = _progressbar
 
-    /*override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.add(callback)
-    }
+    private var _countryLoadError = MutableLiveData<Boolean>()
+    var countryLoadError: LiveData<Boolean> = _countryLoadError
 
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.remove(callback)
-    }*/
+    private val service = GiphyAPIImpl()
+    private val giphyRepository: GiphyRepository by lazy{GiphyRepository(service)}
 
-    fun getRepository(){
-        val giphyService= GiphyAPIImpl().getGiphyService()
-        val giphySingle: Single<GiphyResponse> = giphyService.getResponse()
+    private val disposable = CompositeDisposable()
 
-        giphySingle.subscribeOn(Schedulers.io())
+    fun getGiphyGift() {
+        _progressbar.postValue(true)
+        disposable.add(giphyRepository.giphyData()
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object: SingleObserver<GiphyResponse> {
-                override fun onSubscribe(d: Disposable) {
-                    Log.w("ABC", "S")
-                }
-
+            .subscribeWith(object : DisposableSingleObserver<GiphyResponse>() {
                 override fun onSuccess(response: GiphyResponse) {
-                    gifList = ObservableField<List<Data>>(response.gifList)
+                    _livedataGiphy.value = response.gifList
+                    _progressbar.value = false
                 }
 
                 override fun onError(e: Throwable) {
-                    //handleError(e)
+                    _countryLoadError.value = true
+                    _progressbar.value = false
+                    e.printStackTrace()
                 }
             })
-
-        /*giphySingle.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object: Observer<GiphyResponse>{
-                override fun onNext(response: GiphyResponse) {
-                    handleResults(response)
-                }
-                override fun onError(e: Throwable) {
-
-                }
-                override fun onComplete() {
-                }
-                override fun onSubscribe(d: Disposable) {
-                }
-            })*/
-
-        /*giphySingle.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe(this::handleResults, this::handleError)*/
+        )
+    }
+    override fun onCleared(){
+        super.onCleared()
+        disposable.clear()
     }
 }
