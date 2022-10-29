@@ -7,11 +7,13 @@ import com.bumptech.glide.Glide
 import com.luz.giphy.R
 import com.luz.giphy.api.model.Data
 
-class GiphyGridViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
+class GiphyGridViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val imgGiphy = itemView.findViewById<ImageView>(R.id.imgGiphy)
 
-    fun bindView(data: Data){
+    fun bindView(listener: OnItemClickListener, data: Data) {
         Glide.with(itemView.context).load(data.images.downsized_large.url).into(imgGiphy)
-
+        itemView.setOnClickListener({
+            listener.onClick(itemView, data)
+        })
     }
 }
