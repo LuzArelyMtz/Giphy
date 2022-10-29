@@ -22,31 +22,48 @@ class GiphyViewModel() : ViewModel() {
     private var _countryLoadError = MutableLiveData<Boolean>()
     var countryLoadError: LiveData<Boolean> = _countryLoadError
 
+    private var _username = MutableLiveData<String>()
+    var username: LiveData<String> = _username
+
+    private var _rating = MutableLiveData<String>()
+    var rating: LiveData<String> = _rating
+
+    private var _imgurl = MutableLiveData<String>()
+    var imgurl: LiveData<String> = _imgurl
+
     private val service = GiphyAPIImpl()
-    private val giphyRepository: GiphyRepository by lazy{GiphyRepository(service)}
+    private val giphyRepository: GiphyRepository by lazy { GiphyRepository(service) }
 
     private val disposable = CompositeDisposable()
 
     fun getGiphyGift() {
         _progressbar.postValue(true)
-        disposable.add(giphyRepository.giphyData()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeWith(object : DisposableSingleObserver<GiphyResponse>() {
-                override fun onSuccess(response: GiphyResponse) {
-                    _livedataGiphy.value = response.gifList
-                    _progressbar.value = false
-                }
+        disposable.add(
+            giphyRepository.giphyData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<GiphyResponse>() {
+                    override fun onSuccess(response: GiphyResponse) {
+                        _livedataGiphy.value = response.gifList
+                        _progressbar.value = false
+                    }
 
-                override fun onError(e: Throwable) {
-                    _countryLoadError.value = true
-                    _progressbar.value = false
-                    e.printStackTrace()
-                }
-            })
+                    override fun onError(e: Throwable) {
+                        _countryLoadError.value = true
+                        _progressbar.value = false
+                        e.printStackTrace()
+                    }
+                })
         )
     }
-    override fun onCleared(){
+
+    fun setData(data: Data) {
+        _username.value = data.user.displayName
+        _rating.value = data.rating
+        _imgurl.value = data.images.downsized_large.url
+    }
+
+    override fun onCleared() {
         super.onCleared()
         disposable.clear()
     }

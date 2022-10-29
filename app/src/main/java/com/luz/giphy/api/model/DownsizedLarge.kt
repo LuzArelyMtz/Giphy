@@ -1,7 +1,10 @@
 package com.luz.giphy.api.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DownsizedLarge(
     @SerializedName("height")
     var height:String,
@@ -11,4 +14,4 @@ data class DownsizedLarge(
 
     @SerializedName("url")
     var url:String
-)
+): Parcelable
