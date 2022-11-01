@@ -3,6 +3,7 @@ package com.luz.giphy.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.luz.giphy.api.GiphyAPIImpl
 import com.luz.giphy.api.model.Data
 import com.luz.giphy.api.model.GiphyResponse
@@ -11,8 +12,9 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.launch
 
-class GiphyViewModel() : ViewModel() {
+class GiphyViewModel : ViewModel() {
     private var _livedataGiphy = MutableLiveData<List<Data>>()
     var livedataGiphy: LiveData<List<Data>> = _livedataGiphy
 
@@ -34,27 +36,13 @@ class GiphyViewModel() : ViewModel() {
     private val service = GiphyAPIImpl()
     private val giphyRepository: GiphyRepository by lazy { GiphyRepository(service) }
 
-    private val disposable = CompositeDisposable()
 
     fun getGiphyGift() {
-        _progressbar.postValue(true)
-        disposable.add(
-            giphyRepository.giphyData()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<GiphyResponse>() {
-                    override fun onSuccess(response: GiphyResponse) {
-                        _livedataGiphy.value = response.gifList
-                        _progressbar.value = false
-                    }
-
-                    override fun onError(e: Throwable) {
-                        _countryLoadError.value = true
-                        _progressbar.value = false
-                        e.printStackTrace()
-                    }
-                })
-        )
+        viewModelScope.launch {
+            _progressbar.postValue(true)
+            _livedataGiphy.value = giphyRepository.giphyData().gifList
+        }
+        _progressbar.value = false
     }
 
     fun setData(data: Data) {
@@ -65,6 +53,5 @@ class GiphyViewModel() : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        disposable.clear()
     }
 }

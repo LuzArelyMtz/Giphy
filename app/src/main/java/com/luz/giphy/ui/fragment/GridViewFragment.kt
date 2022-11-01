@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -63,12 +64,10 @@ class GridViewFragment : Fragment() {
         gifAdapter = GiphyGridAdapter(object : OnItemClickListener {
             override fun onClick(v: View?, data: Data) {
                 sharedViewModel.setData(data)
-                val fragment = DetailGiftFragment.newInstance()
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.maincontainer, fragment)
-                    .commitNow()
+                val action =
+                    GridViewFragmentDirections.actionGridViewFragmentToDetailGiftFragment()
+                findNavController().navigate(action)
             }
-
         })
         recyclerv.adapter = gifAdapter
     }
