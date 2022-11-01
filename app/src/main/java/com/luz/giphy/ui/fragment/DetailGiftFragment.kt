@@ -43,7 +43,7 @@ class DetailGiftFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         //return inflater.inflate(R.layout.details_fragment, container, false)
         val detailfragmentBiding = DetailsFragmentBinding.inflate(inflater, container, false)
         binding = detailfragmentBiding

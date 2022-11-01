@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -34,6 +35,9 @@ android {
     dataBinding {
         enabled = true
     }
+    viewBinding {
+        enabled true
+    }
 }
 ext {
     retrofit = '2.9.0'
@@ -46,6 +50,7 @@ ext {
     espresso = '3.4.0'
     rxjava3 = '3.0.0'
     lifecycle = '2.2.0'
+    navigation = "2.5.3"
 }
 
 dependencies {
@@ -70,4 +75,11 @@ dependencies {
     "*/
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle"
     implementation 'androidx.fragment:fragment-ktx:1.5.4'
+    //Navigation
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigation"
+
+
+
 }

@@ -14,10 +14,6 @@ class MainActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.activity_main)*/
         /*actMainBinding.giphyViewModel = viewModel
         actMainBinding.lifecycleOwner = this*/
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.maincontainer, GridViewFragment.newInstance())
-                .commitNow()
-        }
+
     }
 }

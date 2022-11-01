@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/gridViewFragment">
+
+    <fragment
+        android:id="@+id/gridViewFragment"
+        android:name="com.luz.giphy.ui.fragment.GridViewFragment"
+        android:label="GridViewFragment"
+        tools:layout="@layout/gridview_fragment">
+        <action
+            android:id="@+id/action_gridViewFragment_to_detailGiftFragment"
+            app:destination="@id/detailGiftFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailGiftFragment"
+        android:name="com.luz.giphy.ui.fragment.DetailGiftFragment"
+        android:label="DetailGiftFragment"
+        tools:layout="@layout/details_fragment"/>
+</navigation>

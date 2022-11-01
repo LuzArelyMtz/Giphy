@@ -10,7 +10,6 @@ class GiphyAPIImpl {
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(URLBASE)
-            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
