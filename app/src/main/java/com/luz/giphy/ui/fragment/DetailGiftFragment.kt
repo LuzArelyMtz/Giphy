@@ -66,4 +66,6 @@ class DetailGiftFragment : Fragment() {
         super.onDestroyView()
         binding = null
     }
+
+
 }

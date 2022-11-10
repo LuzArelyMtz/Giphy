@@ -15,9 +15,10 @@ class MainActivity : AppCompatActivity() {
         /*actMainBinding.giphyViewModel = viewModel
         actMainBinding.lifecycleOwner = this*/
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.maincontainer, GridViewFragment.newInstance())
-                .commitNow()
+            var transition = supportFragmentManager.beginTransaction()
+            transition.add(R.id.maincontainer, GridViewFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
         }
     }
 }

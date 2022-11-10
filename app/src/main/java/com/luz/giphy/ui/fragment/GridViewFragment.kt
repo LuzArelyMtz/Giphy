@@ -8,6 +8,8 @@ import android.widget.ProgressBar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -64,9 +66,15 @@ class GridViewFragment : Fragment() {
             override fun onClick(v: View?, data: Data) {
                 sharedViewModel.setData(data)
                 val fragment = DetailGiftFragment.newInstance()
-                requireActivity().supportFragmentManager.beginTransaction()
+                requireActivity().supportFragmentManager
+                    /*.commit {
+                    replace<DetailGiftFragment>(R.id.maincontainer)
+                    addToBackStack("GridViewFragment")
+                }*/
+                    .beginTransaction()
                     .replace(R.id.maincontainer, fragment)
-                    .commitNow()
+                    .addToBackStack("GridViewFragment")
+                    .commit()
             }
 
         })
